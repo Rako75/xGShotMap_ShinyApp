@@ -1,0 +1,100 @@
+# ============================================
+# .gitignore pour projet R Shiny simple
+# Projet : xGShotmap (fichier unique app.R)
+# ============================================
+
+# ----------------------------------------
+# Fichiers R générés automatiquement
+# ----------------------------------------
+
+# Historique des commandes R (peut faire plusieurs MB)
+.Rhistory
+.Rapp.history
+
+# Données de session R sauvegardées automatiquement
+.RData
+.RDataTmp
+
+# Préférences utilisateur RStudio
+.Ruserdata
+
+# Fichiers de projet RStudio
+.Rproj.user/
+*.Rproj
+
+# Variables d'environnement R
+.Renviron
+
+# ----------------------------------------
+# Déploiement Shiny (CRITIQUE)
+# ----------------------------------------
+
+# Dossier contenant vos tokens secrets de déploiement
+rsconnect/
+
+# Historique des commandes Shiny
+.shiny_history
+
+# Logs de l'application
+*.log
+
+# ----------------------------------------
+# Cache de données (worldfootballR)
+# ----------------------------------------
+
+# Cache des données Understat (peuvent être volumineuses)
+*.rds
+*.RDS
+
+# Fichiers JSON temporaires des APIs
+*.json
+
+# ----------------------------------------
+# Systèmes d'exploitation
+# ----------------------------------------
+
+# macOS
+.DS_Store
+._*
+
+# Windows  
+Thumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ----------------------------------------
+# Éditeurs de code
+# ----------------------------------------
+
+# Visual Studio Code
+.vscode/
+
+# Fichiers temporaires des éditeurs
+*.swp
+*.tmp
+*.bak
+*~
+
+# ----------------------------------------
+# Fichiers temporaires divers
+# ----------------------------------------
+
+# Fichiers de sauvegarde
+*.backup
+
+# Fichiers temporaires
+temp/
+tmp/
+
+# ----------------------------------------
+# À GARDER (exceptions)
+# ----------------------------------------
+
+# Votre fichier principal (juste pour être explicite)
+!app.R
+
+# Documentation si vous en créez
+!README.md
+!LICENSE
