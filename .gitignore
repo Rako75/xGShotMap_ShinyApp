@@ -1,6 +1,6 @@
 # ============================================
 # .gitignore pour projet R Shiny simple
-# Projet : xGShotmap (fichier unique app.R)
+# Projet : xGShotmap
 # ============================================
 
 # ----------------------------------------
@@ -93,7 +93,7 @@ tmp/
 # ----------------------------------------
 
 # Votre fichier principal (juste pour être explicite)
-!app.R
+!xGShotmap.R
 
 # Documentation si vous en créez
 !README.md
