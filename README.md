@@ -6,9 +6,11 @@ Application R Shiny interactive pour l'analyse de matches de football avec visua
 ![Shiny](https://img.shields.io/badge/Shiny-blue?style=for-the-badge&logo=RStudio&logoColor=white)
 
 <div align="center">
-<a href="https://rakostats.shinyapps.io/xGShotMap_RakoStats/" target="_blank">
-<img src="https://capsule-render.vercel.app/api?type=waving&color=2d5a27&height=120&section=header&text=xG%20SHOTMAP&fontSize=30&fontColor=ffff00&animation=fadeIn&desc=⚽%20Football%20Match%20Analysis&descSize=15&descAlign=50&descAlignY=75" width="100%"/>
-</a>
+
+[![xGShotMap App](https://img.shields.io/badge/⚽_xG_SHOTMAP-LIVE_APP-brightgreen?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTEiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxwYXRoIGQ9Im0xMiAyYTEwIDEwIDAgMSAxIDAgMjBBMTAgMTAgMCAwIDEgMTIgMloiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjwvc3ZnPgo=&labelColor=2d5a27&color=4a7c59)](https://rakostats.shinyapps.io/xGShotMap_RakoStats/)
+
+**🏟️ Application Interactive d'Analyse de Matchs de Football 🏟️**
+
 </div>
 
 ## ✨ Fonctionnalités
