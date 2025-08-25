@@ -22,7 +22,7 @@ Retrouvez l'application en cliquant ici : [![Shiny App](https://img.shields.io/b
 - **Serie A** (Italie)
 - **La Liga** (Espagne)
 
-## 🚀 Installation et utilisation
+## 🚀 Version de R
 
 ### Prérequis
 - R version 4.0.0 ou supérieure
