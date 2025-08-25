@@ -27,16 +27,3 @@ Retrouvez l'application en cliquant ici : [![Shiny App](https://img.shields.io/b
 ### Prérequis
 - R version 4.0.0 ou supérieure
 - RStudio (recommandé)
-
-### Installation des packages
-
-```r
-# Packages requis
-packages <- c(
-  "shiny", "shinydashboard", "DT", "tidyverse", 
-  "ggplot2", "ggsoccer", "patchwork", "ggtext", 
-  "ggrepel", "worldfootballR"
-)
-
-# Installation automatique des packages manquants
-install.packages(packages[!packages %in% installed.packages()[,"Package"]])
