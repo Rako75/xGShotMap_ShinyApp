@@ -7,10 +7,10 @@ Application R Shiny pour l'analyse de matches de football avec visualisation des
 - Analyse des données de matches par équipe
 - Visualisation des Expected Goals en temps réel
 - Cartes de tirs interactives
-- Support pour les ligues : EPL, Ligue 1, Bundesliga, Serie A, La Liga
+- Support pour les ligues : Premier League (EPL), Ligue 1, Bundesliga, Serie A, La Liga
 
 ## Installation
 
 1. Clonez ce repository :
-git clone https://github.com/votre-username/xGShotmap.git
+git clone https://github.com/Rako75/xGShotMap_ShinyApp.git
 cd xGShotmap
