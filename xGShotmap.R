@@ -11,6 +11,8 @@ library(patchwork)
 library(ggtext)
 library(ggrepel)
 library(worldfootballR)
+library(gridExtra)  
+library(grid)       
 
 # ------------------------
 # Utility Functions
@@ -242,6 +244,35 @@ create_match_plot <- function(match_id, league, season_start_year, results) {
   return(final_plot)
 }
 
+# Function to create detailed statistics table
+create_stats_table <- function(shots, match_info) {
+  # Team statistics
+  team_stats <- shots %>%
+    group_by(team_name) %>%
+    summarise(
+      `Total Shots` = n(),
+      `Shots on Target` = sum(result_clean %in% c("Goal", "Saved", "OwnGoal")),
+      `Goals Scored` = sum(result_clean == "Goal"),
+      `Total xG` = round(sum(xG), 2),
+      `Avg xG per Shot` = round(mean(xG), 3),
+      `Shot Conversion %` = round((sum(result_clean == "Goal") / n()) * 100, 1),
+      .groups = "drop"
+    )
+  
+  # Player statistics (top scorers and shot takers)
+  player_stats <- shots %>%
+    group_by(team_name, player) %>%
+    summarise(
+      shots = n(),
+      goals = sum(result_clean == "Goal"),
+      total_xG = round(sum(xG), 2),
+      .groups = "drop"
+    ) %>%
+    arrange(desc(shots), desc(goals))
+  
+  return(list(team_stats = team_stats, player_stats = player_stats))
+}
+
 # ------------------------
 # User Interface (UI)
 # ------------------------
@@ -309,9 +340,21 @@ ui <- dashboardPage(
               ),
               
               fluidRow(
-                box(width = 12, status = "info", solidHeader = TRUE,
+                box(width = 10, status = "info", solidHeader = TRUE,
                     title = "Selected Match Analysis",
                     plotOutput("match_plot", height = "800px")
+                ),
+                box(width = 2, status = "warning", solidHeader = TRUE,
+                    title = "Export",
+                    div(style = "text-align: center; padding: 20px;",
+                        downloadButton("download_report", 
+                                       "Export in PDF",
+                                       class = "btn-warning",
+                                       style = "width: 100%; margin-bottom: 15px;"),
+                        br(),
+                        p("Click to download the full match report in PDF.",
+                          style = "font-size: 12px; color: gray; text-align: justify;")
+                    )
                 )
               )
       )
@@ -329,7 +372,8 @@ server <- function(input, output, session) {
   team_data <- reactiveValues(
     results = NULL,
     team_matches = NULL,
-    selected_match = NULL
+    selected_match = NULL,
+    current_match_data = NULL
   )
   
   # Observer to load teams when league or season changes
@@ -472,6 +516,10 @@ server <- function(input, output, session) {
       
       selected_row <- input$matches_table_rows_selected
       team_data$selected_match <- team_data$team_matches$match_id[selected_row]
+      
+      # Load match data for download functionality
+      match_data <- get_match_data_dynamic(team_data$selected_match, team_data$results)
+      team_data$current_match_data <- match_data
     }
   })
   
@@ -495,6 +543,107 @@ server <- function(input, output, session) {
       )
     }
   })
+  
+  # Download handler for PDF report
+  output$download_report <- downloadHandler(
+    filename = function() {
+      if (!is.null(team_data$current_match_data) && !is.null(team_data$current_match_data$match_info)) {
+        match_info <- team_data$current_match_data$match_info
+        paste0("Match_Report_", 
+               gsub(" ", "_", match_info$home_team), "_vs_", 
+               gsub(" ", "_", match_info$away_team), "_", 
+               gsub("-", "", match_info$match_date), ".pdf")
+      } else {
+        paste0("Match_Report_", Sys.Date(), ".pdf")
+      }
+    },
+    content = function(file) {
+      # Check if match is selected
+      if (is.null(team_data$selected_match) || is.null(team_data$current_match_data)) {
+        showNotification("Veuillez d'abord sélectionner un match à analyser", type = "warning")
+        return()
+      }
+      
+      # Show progress notification
+      showNotification("Génération du rapport PDF en cours...", type = "default", duration = NULL, id = "pdf_progress")
+      
+      tryCatch({
+        # Create the main plot
+        main_plot <- create_match_plot(
+          match_id = team_data$selected_match, 
+          league = input$league, 
+          season_start_year = input$season, 
+          results = team_data$results
+        )
+        
+        # Create additional statistics
+        shots_processed <- process_shots(team_data$current_match_data$shots)
+        stats_data <- create_stats_table(shots_processed, team_data$current_match_data$match_info)
+        
+        # Open PDF device with custom size
+        pdf(file, width = 12, height = 16)
+        
+        # Print main visualization
+        print(main_plot)
+        
+        # Add a new page for detailed statistics
+        grid.newpage()
+        
+        # Title for statistics page
+        title_text <- paste("Statistiques détaillées -", 
+                            team_data$current_match_data$match_info$home_team, "vs", 
+                            team_data$current_match_data$match_info$away_team)
+        
+        grid.text(title_text, x = 0.5, y = 0.95, 
+                  gp = gpar(fontsize = 16, fontface = "bold"))
+        
+        # Team statistics table
+        grid.text("Statistiques par équipe:", x = 0.05, y = 0.85, 
+                  just = "left", gp = gpar(fontsize = 14, fontface = "bold"))
+        
+        # Create and draw team statistics table
+        team_stats_plot <- tableGrob(stats_data$team_stats, rows = NULL, 
+                                     theme = ttheme_default(base_size = 10))
+        
+        vp_team <- viewport(x = 0.5, y = 0.65, width = 0.9, height = 0.3)
+        pushViewport(vp_team)
+        grid.draw(team_stats_plot)
+        popViewport()
+        
+        # Player statistics (top performers)
+        top_players <- stats_data$player_stats %>% head(10)
+        
+        grid.text("Top 10 Joueurs (par nombre de tirs):", x = 0.05, y = 0.4, 
+                  just = "left", gp = gpar(fontsize = 14, fontface = "bold"))
+        
+        # Create and draw player statistics table
+        player_stats_plot <- tableGrob(top_players, rows = NULL,
+                                       theme = ttheme_default(base_size = 9))
+        
+        vp_player <- viewport(x = 0.5, y = 0.2, width = 0.9, height = 0.3)
+        pushViewport(vp_player)
+        grid.draw(player_stats_plot)
+        popViewport()
+        
+        # Close PDF device
+        dev.off()
+        
+        removeNotification("pdf_progress")
+        showNotification("Rapport PDF généré avec succès!", type = "message")
+        
+      }, error = function(e) {
+        removeNotification("pdf_progress")
+        showNotification(paste("Erreur lors de la génération du PDF:", e$message), type = "error")
+        
+        # Create a simple fallback PDF if main generation fails
+        pdf(file, width = 8, height = 10)
+        plot(1:10, main = "Erreur lors de la génération du rapport complet")
+        text(5, 5, paste("Erreur:", e$message), cex = 1.2)
+        dev.off()
+      })
+    },
+    contentType = "application/pdf"
+  )
 }
 
 # ------------------------
